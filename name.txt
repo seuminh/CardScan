@@ -1,0 +1,26 @@
+-MainForm
+
+	tabMenu (tabScan,tabAdd,tabDelete,tabSearch)
+	
+		tabScan(txtScanCardId,txtScanAmount,btnScanClear,btnScan)
+		
+		tabAdd(txtAddCardId,cboAddAmount,btnAddNew,btnAdd)
+	
+		tabDelete(txtDeleteCardId,txtDeleteAmount,btnDeleteClear,btnDelete)
+
+		tabSearch(btnSearchClear,datagridview1,btnSearchClear)
+
+	menuStrip1 (Account,login,signout)
+
+-LoginForm
+	
+	btnCancel,btnLogin,txtUsername,txtPassword
+
+
+
+-Database
+
+	tbCard(CardId,Amount)
+	
+	tbCardScan(Id(auto),CardId(FK),ScanTimes)
+

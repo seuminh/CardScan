@@ -63,6 +63,9 @@ namespace Card
             tabMain.TabPages.Remove(tabAdd);
             tabMain.TabPages.Remove(tabDelete);
             tabMain.TabPages.Remove(tabSearch);
+            txtScanAmount.Text = "";
+            txtScanCardId.Text = "";
+            txtScanType.Text = "";
             login.Enabled = true;
         }
 
@@ -79,6 +82,7 @@ namespace Card
         {
             txtScanAmount.Text = "";
             txtScanCardId.Text = "";
+            txtScanType.Text = "";
         }
 
         // Clear Button in tabScan
@@ -86,6 +90,7 @@ namespace Card
         {
             txtScanAmount.Text = "";
             txtScanCardId.Text = "";
+            txtScanType.Text = "";
             txtScanCardId.Focus();
         }
 
@@ -115,6 +120,7 @@ namespace Card
         {
             txtAddCardId.Text = "";
             cboAddAmount.SelectedIndex = -1;
+            cboAddType.SelectedIndex = -1;
         }
 
         // New Button in tabAdd
@@ -122,17 +128,19 @@ namespace Card
         {
             txtAddCardId.Text = "";
             cboAddAmount.SelectedIndex = -1;
+            cboAddType.SelectedIndex = -1;
             txtAddCardId.Focus();
         }
 
         // Add Button in tabAdd
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            if (txtAddCardId.Text != "" && cboAddAmount.Text != "")
+            if (txtAddCardId.Text != "" && cboAddAmount.Text != ""&&cboAddType.Text!="")
             {
                 Add();
                 txtAddCardId.Text = "";
                 cboAddAmount.SelectedIndex = -1;
+                cboAddType.SelectedIndex = -1;
             }
             else
                 MessageBox.Show("Input All Fill","Warning",MessageBoxButtons.OK,MessageBoxIcon.Warning);
@@ -153,6 +161,7 @@ namespace Card
         {
             txtDeleteCardId.Text = "";
             txtDeleteAmount.Text = "";
+            txtDeleteType.Text = "";
         }
 
         // Clear Button in Delete
@@ -160,6 +169,7 @@ namespace Card
         {
             txtDeleteCardId.Text = "";
             txtDeleteAmount.Text = "";
+            txtDeleteType.Text = "";
             txtDeleteCardId.Focus();
         }
 
@@ -170,7 +180,10 @@ namespace Card
             {
                 Delete();
                 txtDeleteCardId.Text = "";
+                txtDeleteType.Text = "";
                 txtDeleteAmount.Text = "";
+                datagridview1.Rows.Clear();
+                Read();
             }
             else
                 MessageBox.Show("Enter Card ID to Delete","Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -206,7 +219,7 @@ namespace Card
         // Add Function
         void Add()
         {
-            string sql = "INSERT INTO tbCard VALUES(@cardId,@amount)";
+            string sql = "INSERT INTO tbCard VALUES(@cardId,@amount,@type)";
             using(SqlConnection cnn =new SqlConnection(connectionString))
             {
                 cnn.Open();
@@ -214,6 +227,7 @@ namespace Card
                 {
                     cmd.Parameters.AddWithValue("@cardId", txtAddCardId.Text.Trim());
                     cmd.Parameters.AddWithValue("@amount", cboAddAmount.Text.Trim());
+                    cmd.Parameters.AddWithValue("@type", cboAddType.Text.Trim());
                     try
                     {
                         cmd.ExecuteNonQuery();
@@ -233,7 +247,9 @@ namespace Card
             string str = Search(txtDeleteCardId.Text.Trim());
             if (str!="")
             {
-                txtDeleteAmount.Text = str;
+                string[] tmp = str.Split('#');
+                txtDeleteAmount.Text = tmp[0];
+                txtDeleteType.Text = tmp[1];
                 DialogResult result = MessageBox.Show("Do you really want to delete this card","Confirmation",MessageBoxButtons.YesNo,MessageBoxIcon.Information);
                 if (result == DialogResult.Yes)
                 {
@@ -267,7 +283,7 @@ namespace Card
                     using(SqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.Read())
-                            return reader[1].ToString();
+                            return reader[1].ToString()+'#'+reader[2].ToString();
                         else
                             return "";
                     }
@@ -281,20 +297,27 @@ namespace Card
             string str = Search(txtScanCardId.Text.Trim());
             if (str != "")
             {
-                txtScanAmount.Text = str;
+                string[] tmp = str.Split('#');
+                txtScanAmount.Text = tmp[0];
+                txtScanType.Text = tmp[1];
                 if (loginSuccess!="success")
                     Update();
             }
             else
-                MessageBox.Show("Invalid Card","Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
+            {
+                MessageBox.Show("Invalid Card", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtScanAmount.Text = "";
+                txtScanCardId.Text = "";
+                txtScanType.Text = "";
+                txtScanCardId.Focus();
+            }
         }
 
         // Update Function
         void Update()
         {
             bool found = false;
-           // string sql = "SELECT * FROM tbCardScan";
-            string sql = "SELECT * FROM tbCardScanDemo";
+            string sql = "SELECT * FROM tbCardScan";
             using(SqlConnection cnn=new SqlConnection(connectionString))
             {
                 cnn.Open();
@@ -329,8 +352,7 @@ namespace Card
         // Read Function
         void Read()
         {
-            string sql = "SELECT tbCard.CardId,tbCard.Amount,tbCardScan.ScanTimes FROM tbCard INNER JOIN tbCardScan ON tbCard.CardId=tbCardScan.CardId";
-          //  string sql = "SELECT tbCard.CardId,tbCard.Amount,tbCardScanDemo.ScanTimes FROM tbCard INNER JOIN tbCardScanDemo ON tbCard.CardId=tbCardScanDemo.CardId";
+            string sql = "SELECT tbCard.CardId,tbCard.Type,tbCard.Amount,tbCardScan.ScanTimes FROM tbCard INNER JOIN tbCardScan ON tbCard.CardId=tbCardScan.CardId ORDER BY tbCardScan.ScanTimes DESC";
             using(SqlConnection cnn=new SqlConnection(connectionString))
             {
                 cnn.Open();
@@ -340,7 +362,7 @@ namespace Card
                     {
                         while (reader.Read())
                         {
-                            datagridview1.Rows.Add(reader[0], reader[1], reader[2]);
+                            datagridview1.Rows.Add(reader[0], reader[1], reader[2],reader[3]);
                         }
                     }
                 }

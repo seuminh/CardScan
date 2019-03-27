@@ -2,13 +2,13 @@
 
 	tabMenu (tabScan,tabAdd,tabDelete,tabSearch)
 	
-		tabScan(txtScanCardId,txtScanAmount,btnScanClear,btnScan)
+		tabScan(txtScanCardId,txtScanAmount,txtScanType,btnScanClear,btnScan)
 		
-		tabAdd(txtAddCardId,cboAddAmount,btnAddNew,btnAdd)
+		tabAdd(txtAddCardId,cboAddAmount,cboAddType,btnAddNew,btnAdd)
 	
-		tabDelete(txtDeleteCardId,txtDeleteAmount,btnDeleteClear,btnDelete)
+		tabDelete(txtDeleteCardId,txtDeleteAmount,txtDeleteType,btnDeleteClear,btnDelete)
 
-		tabSearch(btnSearchClear,datagridview1,btnSearchClear)
+		tabSearch(btnSearchClear,datagridview1)
 
 	menuStrip1 (Account,login,signout)
 
@@ -20,7 +20,7 @@
 
 -Database
 
-	tbCard(CardId,Amount)
+	tbCard(CardId,Amount,Type)
 	
 	tbCardScan(Id(auto),CardId(FK),ScanTimes)
 

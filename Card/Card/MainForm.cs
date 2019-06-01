@@ -16,7 +16,6 @@ namespace Card
     {
         string loginSuccess="";
         string connectionString;
-        int scan1 = 0, scan2 = 0, scan3 = 0, scan5 = 0, scan10 = 0, scan20 = 0, scan30 = 0;
 
         public MainForm(string str)
         {
@@ -210,8 +209,7 @@ namespace Card
         // Print Button in tabSearch
         private void btnReport_Click(object sender, EventArgs e)
         {
-            FindScan();
-            FormReport formReport = new FormReport(scan1,scan2,scan3,scan5,scan10,scan20,scan30);
+            FormReport formReport = new FormReport();
             formReport.ShowDialog();
         }
         #endregion
@@ -380,7 +378,7 @@ namespace Card
         // Clear Function
         void Clear()
         {
-            string sql = "DELETE FROM tbCardScan";
+            string sql = "UPDATE tbCardScan SET ScanTimes=0";
             using(SqlConnection cnn=new SqlConnection(connectionString))
             {
                 cnn.Open();
@@ -391,39 +389,6 @@ namespace Card
             }
         }
 
-        // Find Scan
-        void FindScan()
-        {
-            foreach(DataGridViewRow row in datagridview1.Rows)
-            {
-                string scan = row.Cells["colAmount"].Value.ToString();
-                int scanTime = (int)row.Cells["colScanTimes"].Value;
-                switch (scan)
-                {
-                    case "1L":
-                        scan1 += scanTime;
-                        break;
-                    case "2L":
-                        scan2 += scanTime;
-                        break;
-                    case "3L":
-                        scan3 += scanTime;
-                        break;
-                    case "5L":
-                        scan5 += scanTime;
-                        break;
-                    case "10L":
-                        scan10 += scanTime;
-                        break;
-                    case "20L":
-                        scan20 += scanTime;
-                        break;
-                    case "30L":
-                        scan30 += scanTime;
-                        break;
-                }
-            }
-        }
         #endregion
 
        
